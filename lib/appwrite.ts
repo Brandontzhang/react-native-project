@@ -28,7 +28,6 @@ export const createUser = async (email: string, password: string, username: stri
 
     // WARNING:He adds a catch here for if there is no new account and throws an error, but I think that should be caught in the catch block anyways
 
-    await signUp(email, password);
     const newUser = await database.createDocument(
       config.databaseId,
       config.userCollectionId,
@@ -40,13 +39,15 @@ export const createUser = async (email: string, password: string, username: stri
         avatar: avatarUrl
       }
     );
+
+    await signIn(email, password);
     return newUser;
   } catch (error: any) {
     throw new Error(error);
   }
 }
 
-export const signUp = async (email: string, password: string) => {
+export const signIn = async (email: string, password: string) => {
   try {
     const session = await account.createEmailPasswordSession(email, password);
   } catch (error: any) {
