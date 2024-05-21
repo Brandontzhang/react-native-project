@@ -28,7 +28,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
         tabBarShowLabel: false,
         tabBarActiveTintColor: '#FFA001',
         tabBarInactiveTintColor: '#CDCDE0',
@@ -36,7 +36,8 @@ export default function TabsLayout() {
           backgroundColor: '#161622',
           borderTopWidth: 1,
           borderTopColor: '#232533',
-          height: 84
+          height: 84,
+          paddingTop: 20,
         }
       }}>
       <Tabs.Screen
@@ -78,7 +79,7 @@ export default function TabsLayout() {
             <TabIcon
               icon={icons.plus}
               color={color}
-              name="Home"
+              name="Create"
               focused={focused}
             />
           )
