@@ -7,8 +7,10 @@ import { useState } from "react";
 import CustomButton from "@/components/CustomButton";
 import { Link, router } from "expo-router";
 import { createUser } from "@/lib/appwrite";
+import { useGlobalContext } from "@/context/globalProvider";
 
 const SignUp = () => {
+  const { setUser } = useGlobalContext();
   const [form, setForm] = useState({
     username: '',
     email: '',
@@ -23,8 +25,8 @@ const SignUp = () => {
       }
 
       setIsSubmitting(true);
-      // TODO: Set to global state using context
       const newUser = await createUser(form.email, form.password, form.username);
+      setUser(newUser);
       Alert.alert("Success", "User created");
       setIsSubmitting(false);
       router.replace("/home");

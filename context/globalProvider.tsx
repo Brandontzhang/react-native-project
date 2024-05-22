@@ -3,8 +3,13 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 
 const GlobalContext = createContext({
-  user: null,
+  user: {
+    $id: "",
+    username: "",
+    avatar: "",
+  },
   setUser: (doc: any) => { },
+  setCurrentUser: () => { },
   isLoggedIn: false,
   setIsLoggedIn: (isLoggedIn: boolean) => { },
   isLoading: true,
@@ -18,6 +23,10 @@ const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setCurrentUser();
+  }, []);
+
+  const setCurrentUser = () => {
     getCurrentUser().then((res) => {
       if (res) {
         setIsLoggedIn(true);
@@ -29,21 +38,23 @@ const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
     }).catch((error) => {
       setIsLoggedIn(false);
       setUser(null);
-      Alert.alert("Error", error.message);
+      console.log(error.message);
     }).finally(() => {
       setIsLoading(false);
     })
-  }, []);
+
+  }
 
   return (
     <GlobalContext.Provider
       value={{
         user,
         setUser,
+        setCurrentUser,
         isLoggedIn,
         setIsLoggedIn,
         isLoading,
-        setIsLoading
+        setIsLoading,
       }}
     >
       {children}
