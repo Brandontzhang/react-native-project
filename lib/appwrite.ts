@@ -10,11 +10,13 @@ export const config = {
   storageId: "664cf801002aa8a0bb6b",
 }
 
+const { endpoint, platform, projectId, databaseId, userCollectionId, videoCollectionId, storageId } = config;
+
 const client = new Client();
 client
-  .setEndpoint(config.endpoint)
-  .setProject(config.projectId)
-  .setPlatform(config.platform);
+  .setEndpoint(endpoint)
+  .setProject(projectId)
+  .setPlatform(platform);
 
 
 const account = new Account(client);
@@ -29,8 +31,8 @@ export const createUser = async (email: string, password: string, username: stri
     // WARNING:He adds a catch here for if there is no new account and throws an error, but I think that should be caught in the catch block anyways
 
     const newUser = await database.createDocument(
-      config.databaseId,
-      config.userCollectionId,
+      databaseId,
+      userCollectionId,
       ID.unique(),
       {
         accountId: newAccount.$id,
@@ -62,14 +64,27 @@ export const getCurrentUser = async () => {
     // TODO: check if error gets thrown if there is no account logged in
 
     const currentUser = await database.listDocuments(
-      config.databaseId,
-      config.userCollectionId,
+      databaseId,
+      userCollectionId,
       [Query.equal('accountId', currentAccount.$id)]
     )
 
     // TODO: also if no user
 
     return currentUser.documents[0];
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
+export const getAllPosts = async () => {
+  try {
+    const posts = await database.listDocuments(
+      databaseId,
+      videoCollectionId,
+    )
+
+    return posts.documents;
   } catch (error: any) {
     throw new Error(error);
   }

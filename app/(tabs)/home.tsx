@@ -1,35 +1,44 @@
 import { Image, Text, View, RefreshControl } from "react-native"
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
 
 import { images } from "../../constants";
+import useAppwrite from "@/hooks/useAppwrite";
+import { getAllPosts } from "@/lib/appwrite";
+
 import SearchInput from "@/components/SearchInput";
-import { useState } from "react";
 import Trending from "@/components/Trending";
 import EmptyState from "@/components/EmptyState";
+import VideoCard from "@/components/VideoCard";
 
 const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setQuery] = useState("");
+
+  const { data: posts, refetch } = useAppwrite(getAllPosts);
+
   const onRefresh = async () => {
     setRefreshing(true);
-    // TODO: refresh vids
+    await refetch();
     setRefreshing(false);
   }
-  const [searchQuery, setQuery] = useState("");
 
   const handleChangeText = (text: string) => {
     setQuery(text);
   }
 
-  const data = [{ id: 1 }, { id: 2 }, { id: 3 }];
-
   return (
     <SafeAreaView className="bg-primary h-full">
       <FlatList
-        data={data}
-        keyExtractor={(item) => `${item.id}`}
+        data={posts}
+        keyExtractor={(item) => `${item.$id}`}
         renderItem={({ item }) => (
-          <Text className="text-3xl text-white">{item.id}</Text>
+          <View>
+            <VideoCard
+              video={item}
+            />
+          </View>
         )}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
