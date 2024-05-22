@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { images } from "../../constants";
 import useAppwrite from "@/hooks/useAppwrite";
-import { getAllPosts } from "@/lib/appwrite";
+import { getAllPosts, getLatestPosts } from "@/lib/appwrite";
 
 import SearchInput from "@/components/SearchInput";
 import Trending from "@/components/Trending";
@@ -16,11 +16,12 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setQuery] = useState("");
 
-  const { data: posts, refetch } = useAppwrite(getAllPosts);
+  const { data: posts, refetch: refetchPosts } = useAppwrite(getAllPosts);
+  const { data: latestPosts, refetch: refetchLatestPosts } = useAppwrite(getLatestPosts);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await refetch();
+    await refetchPosts();
     setRefreshing(false);
   }
 
@@ -64,7 +65,7 @@ const Home = () => {
 
             <View className="w-full flex-1 pt-5 pb-8">
               <Text className="text-lg font-pregular mb-3 text-gray-100">Latest Videos</Text>
-              <Trending posts={[{ id: 1 }, { id: 2 }] ?? []} />
+              <Trending posts={latestPosts ?? []} />
             </View>
           </View>
         )}
