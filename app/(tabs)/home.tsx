@@ -14,7 +14,6 @@ import VideoCard from "@/components/VideoCard";
 
 const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
-  const [searchQuery, setQuery] = useState("");
 
   const { data: posts, refetch: refetchPosts } = useAppwrite(getAllPosts);
   const { data: latestPosts, refetch: refetchLatestPosts } = useAppwrite(getLatestPosts);
@@ -23,10 +22,6 @@ const Home = () => {
     setRefreshing(true);
     await refetchPosts();
     setRefreshing(false);
-  }
-
-  const handleChangeText = (text: string) => {
-    setQuery(text);
   }
 
   return (
@@ -57,11 +52,7 @@ const Home = () => {
               </View>
             </View>
 
-            <SearchInput
-              placeholder="Search for a video"
-              value={searchQuery}
-              handleChangeText={handleChangeText}
-            />
+            <SearchInput />
 
             <View className="w-full flex-1 pt-5 pb-8">
               <Text className="text-lg font-pregular mb-3 text-gray-100">Latest Videos</Text>

@@ -1,17 +1,25 @@
 import { Image, TextInput, TouchableOpacity, View } from "react-native"
 
 import { icons } from "../constants";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { router, usePathname } from "expo-router";
 
 interface SearchInputProps {
-  value: string,
-  placeholder?: string,
-  handleChangeText: (e: string) => void,
   styles?: string,
 }
 
-const SearchInput: React.FC<SearchInputProps> = ({ value, placeholder, handleChangeText, styles }) => {
+const SearchInput: React.FC<SearchInputProps> = ({ styles }) => {
+  const [searchQuery, setQuery] = useState("");
+  const pathname = usePathname();
   const input = useRef<TextInput>(null);
+
+  const handleSearch = () => {
+    if (pathname.startsWith('/search')) {
+      router.setParams({ query: searchQuery });
+    } else {
+      router.push(`/search/${searchQuery}`);
+    }
+  }
 
   return (
     <View className={`space-y-2 ${styles}`}>
@@ -29,10 +37,12 @@ const SearchInput: React.FC<SearchInputProps> = ({ value, placeholder, handleCha
         <TextInput
           ref={input}
           className="flex-1 text-white font-pregular text-base"
-          value={value}
-          placeholder={placeholder}
-          placeholderTextColor="#7B7B8B"
-          onChangeText={handleChangeText}
+          value={searchQuery}
+          placeholder="Search for a video"
+          placeholderTextColor="#CDCDE0"
+          onChangeText={(e) => setQuery(e)}
+          enterKeyHint="search"
+          onEndEditing={handleSearch}
         />
       </View>
     </View>
