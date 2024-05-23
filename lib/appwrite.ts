@@ -1,4 +1,6 @@
-import { Account, Avatars, Client, Databases, ID, Query } from 'react-native-appwrite';
+import { DocumentPickerAsset } from 'expo-document-picker';
+import { ImagePickerAsset } from 'expo-image-picker';
+import { Account, Avatars, Client, Databases, ID, ImageGravity, Query, Storage } from 'react-native-appwrite';
 
 export const config = {
   endpoint: 'https://cloud.appwrite.io/v1',
@@ -22,6 +24,7 @@ client
 const account = new Account(client);
 const avatar = new Avatars(client);
 const database = new Databases(client);
+const storage = new Storage(client);
 
 export const createUser = async (email: string, password: string, username: string) => {
   try {
@@ -140,6 +143,98 @@ export const getUserPosts = async (userId: string) => {
     )
 
     return posts.documents;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
+export const getFilePreview = async (fileId: string, type: string) => {
+  let fileUrl;
+
+  try {
+    if (type === 'video') {
+      fileUrl = storage.getFileView(storageId, fileId);
+    } else if (type === 'image') {
+      fileUrl = storage.getFilePreview(storageId, fileId, 2000, 2000, ImageGravity.Top, 100);
+    } else {
+      throw new Error("Invalid file type");
+    }
+
+    if (!fileUrl) throw Error;
+
+    return fileUrl;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
+export const uploadVideoFile = async (file: DocumentPickerAsset | null, type: string) => {
+  if (!file) return;
+
+  const { mimeType, ...rest } = file;
+  const asset = {
+    type: mimeType!,
+    name: rest.name,
+    size: rest.size!,
+    uri: rest.uri,
+  };
+
+  try {
+    const uploadedFile = await storage.createFile(
+      storageId,
+      ID.unique(),
+      asset
+    );
+
+    const fileUrl = await getFilePreview(uploadedFile.$id, type);
+
+    return fileUrl;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
+export const uploadImageFile = async (file: ImagePickerAsset | null, type: string) => {
+  if (!file) return;
+
+  const { mimeType, ...rest } = file;
+  const asset = {
+    type: mimeType!,
+    name: rest.fileName!,
+    size: rest.fileSize!,
+    uri: rest.uri,
+  };
+
+  try {
+    const uploadedFile = await storage.createFile(
+      storageId,
+      ID.unique(),
+      asset
+    );
+
+    const fileUrl = await getFilePreview(uploadedFile.$id, type);
+
+    return fileUrl;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+export const createVideo = async (videoForm: { title: string, video: DocumentPickerAsset | null, thumbnail: ImagePickerAsset | null, prompt: string, userId: string }) => {
+  try {
+    const [thumbnailUrl, videoUrl] = await Promise.all([
+      uploadImageFile(videoForm.thumbnail, 'image'),
+      uploadVideoFile(videoForm.video, 'video'),
+    ]);
+
+    const newPost = await database.createDocument(databaseId, videoCollectionId, ID.unique(), {
+      title: videoForm.title,
+      video: videoUrl,
+      thumbnail: thumbnailUrl,
+      prompt: videoForm.prompt,
+      users: videoForm.userId,
+    });
+
+    return newPost;
   } catch (error: any) {
     throw new Error(error);
   }

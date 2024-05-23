@@ -9,8 +9,6 @@ import { useGlobalContext } from "@/context/globalProvider";
 import EmptyState from "@/components/EmptyState";
 import VideoCard from "@/components/VideoCard";
 
-
-
 import { icons } from "../../constants";
 
 const Profile = () => {

@@ -82,7 +82,8 @@ export default function TabsLayout() {
               name="Create"
               focused={focused}
             />
-          )
+          ),
+          unmountOnBlur: true
         }}
       />
       <Tabs.Screen
