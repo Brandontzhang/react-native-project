@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import GlobalProvider from '@/context/globalProvider';
+import { StatusBar } from 'expo-status-bar';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -47,6 +48,7 @@ const RootLayout = () => {
           <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
+        <StatusBar backgroundColor="#161622" style="light" />
       </ThemeProvider>
     </GlobalProvider>
 
