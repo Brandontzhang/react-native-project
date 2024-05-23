@@ -3,13 +3,16 @@ import { Video, ResizeMode } from "expo-av";
 
 import { icons } from "../constants";
 import { useState } from "react";
+import { useGlobalContext } from "@/context/globalProvider";
+import { bookmarkVideo } from "@/lib/appwrite";
 
 interface VideoCardProps {
   video: any
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ video: { title, thumbnail, video, users: { avatar, username } } }) => {
+const VideoCard: React.FC<VideoCardProps> = ({ video: { $id, title, thumbnail, video, users: { avatar, username }, bookmarkUsers } }) => {
   const [play, setPlay] = useState(false);
+  const { user } = useGlobalContext();
 
   return (
     <View className="flex-col items-center px-4 mb-14">
@@ -22,11 +25,23 @@ const VideoCard: React.FC<VideoCardProps> = ({ video: { title, thumbnail, video,
             <Text className="font-psemibold text-white text-sm" numberOfLines={1}>{title}</Text>
             <Text className="text-xs text-gray-100 font-pregular" numberOfLines={1}>{username}</Text>
           </View>
-          <Image
-            source={icons.menu}
-            className="h-5 w-5"
-            resizeMode="contain"
-          />
+          <View className="flex-row space-x-2">
+            <TouchableOpacity onPress={() => bookmarkVideo($id, bookmarkUsers, user.$id)}>
+              <Image
+                source={icons.bookmark}
+                className="h-5 w-5"
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                source={icons.menu}
+                className="h-5 w-5"
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+
+          </View>
         </View>
       </View>
 

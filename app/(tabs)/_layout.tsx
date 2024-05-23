@@ -67,7 +67,8 @@ export default function TabsLayout() {
               name="bookmark"
               focused={focused}
             />
-          )
+          ),
+          unmountOnBlur: true
         }}
       />
       <Tabs.Screen

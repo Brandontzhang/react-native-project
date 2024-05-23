@@ -239,3 +239,41 @@ export const createVideo = async (videoForm: { title: string, video: DocumentPic
     throw new Error(error);
   }
 }
+
+export const bookmarkVideo = async ($id: string, bookmarkUsers: { $id: string }[], userId: string) => {
+  try {
+    if (bookmarkUsers.map(user => user.$id).includes(userId)) {
+      return;
+    }
+
+    const updatedVideo = await database.updateDocument(
+      databaseId,
+      videoCollectionId,
+      $id,
+      {
+        bookmarkUsers: [...bookmarkUsers.map(user => user.$id), userId]
+      }
+    )
+
+    return updatedVideo.documents;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
+// WARN: Appwrite doesn't support querying by relationship right now...
+export const getBookmarkVideos = async (userId: string) => {
+  try {
+    const bookmarkedPosts = await database.listDocuments(
+      databaseId,
+      videoCollectionId,
+      [Query.contains('bookmarkUsers', userId)],
+    );
+
+    console.log(bookmarkedPosts);
+    return bookmarkedPosts.documents;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error);
+  }
+}
